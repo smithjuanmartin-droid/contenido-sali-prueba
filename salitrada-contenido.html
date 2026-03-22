@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Salitrada — Sistema de Contenido Invierno</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --sand: #FAF8F4;
+    --sand-dark: #F0ECE4;
+    --coral: #D4725A;
+    --coral-light: #F2C4B8;
+    --ocean: #3A7CA5;
+    --ocean-light: #B8D8EC;
+    --launch: #5C8A5C;
+    --launch-light: #BDD8BD;
+    --navy: #1C2B3A;
+    --gray: #6B7280;
+    --gray-light: #E5E7EB;
+    --white: #FFFFFF;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--sand);
+    color: var(--navy);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--navy);
+    padding: 24px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .logo span { color: var(--coral-light); }
+  .subtitle-header {
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+    font-weight: 400;
+  }
+
+  /* MAIN */
+  main { padding: 40px; max-width: 1400px; margin: 0 auto; }
+
+  /* STATS BAR */
+  .stats {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+  .stat-pill {
+    background: var(--white);
+    border: 1px solid var(--gray-light);
+    border-radius: 100px;
+    padding: 8px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--navy);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .stat-pill .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+  }
+  .dot-f1 { background: var(--coral); }
+  .dot-f2 { background: var(--ocean); }
+  .dot-f3 { background: var(--launch); }
+
+  /* FILTERS */
+  .filters {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+  .filter-btn {
+    padding: 10px 24px;
+    border-radius: 100px;
+    border: 2px solid var(--gray-light);
+    background: var(--white);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--gray);
+  }
+  .filter-btn:hover { border-color: var(--navy); color: var(--navy); }
+  .filter-btn.active { background: var(--navy); color: var(--white); border-color: var(--navy); }
+  .filter-btn.f1.active { background: var(--coral); border-color: var(--coral); }
+  .filter-btn.f2.active { background: var(--ocean); border-color: var(--ocean); }
+  .filter-btn.f3.active { background: var(--launch); border-color: var(--launch); }
+
+  /* PHASE HEADERS */
+  .phase-header {
+    margin: 40px 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .phase-header:first-of-type { margin-top: 0; }
+  .phase-badge {
+    padding: 6px 18px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .phase-badge.f1 { background: var(--coral); color: var(--white); }
+  .phase-badge.f2 { background: var(--ocean); color: var(--white); }
+  .phase-badge.f3 { background: var(--launch); color: var(--white); }
+  .phase-title { font-size: 18px; font-weight: 600; }
+  .phase-dates { font-size: 13px; color: var(--gray); margin-left: auto; }
+
+  /* GRID */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+    margin-bottom: 8px;
+  }
+
+  /* CARD */
+  .card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 20px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .card.f1::before { background: var(--coral); }
+  .card.f2::before { background: var(--ocean); }
+  .card.f3::before { background: var(--launch); }
+  .card:hover { border-color: var(--navy); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(28,43,58,0.1); }
+
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 14px;
+  }
+  .card-num {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gray);
+    letter-spacing: 1px;
+  }
+  .badges { display: flex; gap: 6px; flex-wrap: wrap; }
+  .badge {
+    padding: 3px 10px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 600;
+    border: 1.5px solid;
+  }
+  .badge-pilar { color: var(--navy); border-color: var(--gray-light); background: var(--sand); }
+  .badge-formato { color: var(--gray); border-color: var(--gray-light); background: var(--white); }
+
+  .card-hook {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--navy);
+    margin-bottom: 10px;
+  }
+  .card-desc {
+    font-size: 13px;
+    color: var(--gray);
+    line-height: 1.5;
+  }
+  .card-arrow {
+    position: absolute;
+    bottom: 20px; right: 20px;
+    font-size: 18px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .card:hover .card-arrow { opacity: 1; }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(28,43,58,0.6);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    backdrop-filter: blur(4px);
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+  .modal {
+    background: var(--white);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 720px;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: translateY(20px);
+    transition: transform 0.2s;
+    position: relative;
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+
+  .modal-top-bar {
+    height: 4px;
+    border-radius: 20px 20px 0 0;
+  }
+  .modal-top-bar.f1 { background: var(--coral); }
+  .modal-top-bar.f2 { background: var(--ocean); }
+  .modal-top-bar.f3 { background: var(--launch); }
+
+  .modal-header {
+    padding: 28px 32px 20px;
+    border-bottom: 1px solid var(--gray-light);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .modal-meta { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+  .modal-num { font-size: 12px; color: var(--gray); font-weight: 600; letter-spacing: 1px; }
+  .modal-title { font-size: 20px; font-weight: 700; line-height: 1.3; }
+  .modal-close {
+    background: var(--sand);
+    border: none;
+    border-radius: 50%;
+    width: 36px; height: 36px;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--navy);
+    transition: background 0.2s;
+  }
+  .modal-close:hover { background: var(--gray-light); }
+
+  .modal-body { padding: 28px 32px; display: flex; flex-direction: column; gap: 24px; }
+
+  .brief-section { }
+  .brief-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gray);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .brief-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--gray-light);
+  }
+  .brief-content {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--navy);
+  }
+  .brief-content p { margin-bottom: 8px; }
+  .brief-content p:last-child { margin-bottom: 0; }
+
+  .guion-line {
+    background: var(--sand);
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    font-size: 13px;
+    line-height: 1.6;
+    border-left: 3px solid var(--gray-light);
+  }
+  .guion-line:last-child { margin-bottom: 0; }
+  .guion-time {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .copy-box {
+    background: var(--sand);
+    border-radius: 12px;
+    padding: 16px 18px;
+    font-size: 14px;
+    line-height: 1.7;
+    position: relative;
+    border: 1px dashed var(--gray-light);
+  }
+  .copy-chip {
+    display: inline-block;
+    background: var(--navy);
+    color: var(--white);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+  }
+
+  .tag-story {
+    background: #FFF3E0;
+    color: #E65100;
+    border-color: #FFCCBC;
+  }
+
+  /* HIDDEN */
+  .hidden { display: none !important; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--sand); }
+  ::-webkit-scrollbar-thumb { background: var(--gray-light); border-radius: 3px; }
+
+  @media (max-width: 600px) {
+    main { padding: 20px; }
+    header { padding: 16px 20px; }
+    .modal-header, .modal-body { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">Salitrada <span>✦</span></div>
+    <div class="subtitle-header">Sistema de Contenido — Lanzamiento Invierno</div>
+  </div>
+  <div style="text-align:right;">
+    <div style="font-size:13px;color:rgba(255,255,255,0.7);font-weight:500;">30 piezas creativas</div>
+    <div style="font-size:12px;color:rgba(255,255,255,0.4);">25 mar → 24 abr 2025</div>
+  </div>
+</header>
+
+<main>
+
+  <div class="stats">
+    <div class="stat-pill"><span class="dot dot-f1"></span> Fase 1: Anticipación — 12 piezas</div>
+    <div class="stat-pill"><span class="dot dot-f2"></span> Fase 2: Countdown — 9 piezas</div>
+    <div class="stat-pill"><span class="dot dot-f3"></span> Fase 3: Lanzamiento — 10 piezas</div>
+  </div>
+
+  <div class="filters">
+    <button class="filter-btn active" onclick="filterCards('all', this)">Todas</button>
+    <button class="filter-btn f1" onclick="filterCards('f1', this)">Fase 1 — Anticipación</button>
+    <button class="filter-btn f2" onclick="filterCards('f2', this)">Fase 2 — Countdown</button>
+    <button class="filter-btn f3" onclick="filterCards('f3', this)">Fase 3 — Lanzamiento</button>
+  </div>
+
+  <div id="cards-container"></div>
+</main>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOnOverlay(event)">
+  <div class="modal" id="modal">
+    <div class="modal-top-bar" id="modal-top-bar"></div>
+    <div class="modal-header">
+      <div>
+        <div class="modal-meta" id="modal-meta"></div>
+        <div class="modal-num" id="modal-num"></div>
+        <div class="modal-title" id="modal-title"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="brief-section">
+        <div class="brief-label">💡 Idea del Anuncio</div>
+        <div class="brief-content" id="modal-idea"></div>
+      </div>
+      <div class="brief-section">
+        <div class="brief-label">🎬 Guión</div>
+        <div id="modal-guion"></div>
+      </div>
+      <div class="brief-section">
+        <div class="brief-label">✍️ Copy del Post</div>
+        <div id="modal-copy"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const PILARES = {
+  bts: 'Behind the Scenes',
+  marca: 'La Marca',
+  lifestyle: 'Lifestyle',
+  comunidad: 'Comunidad',
+  producto: 'Producto'
+};
+
+const FORMATOS = {
+  reel: '🎬 Reel',
+  carrusel: '📱 Carrusel',
+  foto: '📸 Foto',
+  story: '⭕ Story'
+};
+
+const content = [
+  // ── FASE 1 ──────────────────────────────────────────────────────
+  {
+    id: 1, fase: 'f1',
+    pilar: 'bts', formato: 'reel',
+    hook: '"Esto lo estuvimos haciendo en secreto por meses"',
+    desc: 'Plano del taller con telas y manos trabajando, sin revelar el producto.',
+    idea: 'Un Reel corto (15–20s) que muestra el taller de Salitrada en actividad: telas dobladas sobre mesas, manos cortando y cosiendo, cajas apiladas. Sin mostrar ninguna prenda terminada. La idea es crear intriga desde el primer segundo. Música evocadora y lenta al principio, termina con texto misterioso.',
+    guion: [
+      { time: '0–3s', text: 'Close-up de telas de distintos colores apiladas sobre una mesa del taller. Sin texto.' },
+      { time: '3–7s', text: 'Manos de Lucía (o del equipo) manipulando tela, tomando medidas. Se escucha el ambiente del taller.' },
+      { time: '7–13s', text: 'Plano general del taller: cajas, rollo de telas, muestras colgadas. Todo en movimiento lento.' },
+      { time: '13–17s', text: 'Lucía mira a cámara directamente, sonríe sin decir nada.' },
+      { time: '17–20s', text: 'Texto superpuesto: "Algo se está cocinando. 🌊" / Negro / Logo Salitrada.' },
+    ],
+    copy: '🤫 Meses de trabajo. Muchas telas probadas. Un equipo que se partió el lomo.\n\nYa casi.\n\n¿Adivinan qué viene? 👀'
+  },
+  {
+    id: 2, fase: 'f1',
+    pilar: 'bts', formato: 'carrusel',
+    hook: '"Así empieza una colección Salitrada"',
+    desc: 'El proceso creativo de principio a fin, slide a slide.',
+    idea: 'Un carrusel que lleva a la audiencia por el proceso de creación de una colección: desde la inspiración y el moodboard hasta la primera muestra. El objetivo es generar conexión emocional con la marca y posicionar a Salitrada como una marca con proceso artesanal y cuidado real.',
+    guion: [
+      { time: 'Slide 1', text: '"Así nace una colección Salitrada 🧵" — foto del taller como portada.' },
+      { time: 'Slide 2', text: 'Foto del moodboard / referencias de inspiración. Texto: "Todo empieza con una idea y muuuchas referencias."' },
+      { time: 'Slide 3', text: 'Bocetos a mano. Texto: "Después vienen los bocetos. (Muchos van directo a la basura.)"' },
+      { time: 'Slide 4', text: 'Elección de telas. Texto: "La tela lo es todo. Esta temporada nos volvimos locas con esta textura."' },
+      { time: 'Slide 5', text: 'Primera muestra. Texto: "La primera muestra siempre da un poco de miedo. Y emoción. Y miedo."' },
+      { time: 'Slide 6', text: '"La colección invierno llega pronto. 🌊 Seguinos para no perderte nada." + Logo Salitrada.' },
+    ],
+    copy: 'Una colección no aparece de la nada. ✨\n\nTe mostramos cómo se hace la magia (y el caos que hay detrás).\n\nLa colección invierno llega pronto. 🌊'
+  },
+  {
+    id: 3, fase: 'f1',
+    pilar: 'bts', formato: 'story',
+    hook: '"Las telas que elegimos este invierno"',
+    desc: 'Serie de stories mostrando telas y paleta de color con texto superpuesto.',
+    idea: 'Una secuencia de 3–4 stories mostrando las telas seleccionadas para la colección (close-up de texturas, paleta de colores). Al final, una encuesta para activar el engagement. El objetivo es mostrar el criterio y calidad de Salitrada sin revelar las prendas terminadas.',
+    guion: [
+      { time: 'Story 1', text: 'Foto de telas extendidas sobre mesa. Texto: "Esto es lo que elegimos para este invierno 🎨"' },
+      { time: 'Story 2', text: 'Close-up extremo de la textura de la tela principal. Texto: "¿Ven esa textura? 😍"' },
+      { time: 'Story 3', text: 'Paleta de colores de la temporada (fichas de color). Texto: "Los colores que nos volvieron locas."' },
+      { time: 'Story 4', text: 'Encuesta: "¿Cuál les gusta más?" | [Color A 🩷] vs [Color B 🤍]' },
+    ],
+    copy: '(Solo stories — no requiere copy de feed)'
+  },
+  {
+    id: 4, fase: 'f1',
+    pilar: 'marca', formato: 'reel',
+    hook: '"Por qué hacemos una colección de invierno siendo una marca de trajes de baño"',
+    desc: 'Lucía a cámara explicando la filosofía de la marca. Tono íntimo y directo.',
+    idea: 'Un Reel donde Lucía habla directo a cámara para responder la pregunta que "más les hacen". Es una pieza de posicionamiento de marca: explica la visión de Salitrada (el sol no tiene estación) y anticipa la colección. Tono conversacional, íntimo, sin producción excesiva.',
+    guion: [
+      { time: '0–4s', text: 'Lucía a cámara: "La pregunta que más nos hacen: ¿por qué hacen una colección de invierno si venden trajes de baño?"' },
+      { time: '4–9s', text: '"Y la respuesta siempre es la misma: porque el sol no tiene estación."' },
+      { time: '9–15s', text: 'Imágenes B-roll: termas con vapor, destinos de playa en invierno, pileta climatizada.' },
+      { time: '15–19s', text: 'Lucía: "Salitrada es para la chica que no para. Aunque sea invierno."' },
+      { time: '19–22s', text: 'Texto: "Colección Invierno — pronto 🌊" / Logo.' },
+    ],
+    copy: 'Nos preguntan mucho esto. Y la respuesta siempre es la misma. ☀️❄️\n\nEl sol no tiene estación.\n\nLa colección invierno llega pronto. ¿Ya activaste las notificaciones? 🔔'
+  },
+  {
+    id: 5, fase: 'f1',
+    pilar: 'marca', formato: 'carrusel',
+    hook: '"El proceso que nadie ve"',
+    desc: 'El lado humano y artesanal de la marca. El equipo, las decisiones, el cuidado.',
+    idea: 'Un carrusel que muestra a las personas detrás de Salitrada: el equipo, las decisiones de calidad, el packaging. El objetivo es humanizar la marca y generar conexión emocional antes del lanzamiento. Cada slide tiene un mensaje corto y directo.',
+    guion: [
+      { time: 'Slide 1', text: '"El proceso que nadie ve 👀" — foto del equipo completo trabajando.' },
+      { time: 'Slide 2', text: 'Foto del equipo reunido. Texto: "El equipo que hace posible cada pieza."' },
+      { time: 'Slide 3', text: 'Detalle de costura/terminación. Texto: "Cada costura importa. La calidad no es un slogan."' },
+      { time: 'Slide 4', text: 'Prueba de prenda en modelo. Texto: "¿Funciona? ¿Queda bien? ¿Lo usaría yo? Las tres preguntas de siempre."' },
+      { time: 'Slide 5', text: 'Packaging / cajas listas. Texto: "El mismo cuidado en el envío que en la prenda."' },
+      { time: 'Slide 6', text: '"Detrás de cada traje hay horas de amor. Próximamente, lo nuevo. 🤍"' },
+    ],
+    copy: 'No es magia. Es proceso, equipo y mucho amor por lo que hacemos. 🤍\n\nEsto es Salitrada por dentro.'
+  },
+  {
+    id: 6, fase: 'f1',
+    pilar: 'lifestyle', formato: 'reel',
+    hook: '"El invierno no es excusa"',
+    desc: 'Montaje de destinos cálidos en invierno: termas, Brasil, pileta climatizada.',
+    idea: 'Un Reel de montaje aspiracional que muestra todos los contextos donde usar un traje de baño en invierno tiene todo el sentido. Ritmo rápido, música energética. El objetivo es romper la objeción "para qué me compro un traje de baño en invierno".',
+    guion: [
+      { time: '0–2s', text: 'Texto en negro: "El invierno no es excusa para..."' },
+      { time: '2–5s', text: 'Clip: termas humeantes, chicas en trajes de baño en el agua caliente.' },
+      { time: '5–8s', text: 'Clip: playa tropical (Brasil/Nordeste), sol y agua turquesa.' },
+      { time: '8–11s', text: 'Clip: pileta climatizada cubierta, alguien nadando.' },
+      { time: '11–13s', text: 'Clip: resort con pileta, vibes de lujo accesible.' },
+      { time: '13–17s', text: '"...dejar de ser vos." — Texto grande, música al pico.' },
+      { time: '17–20s', text: 'Logo Salitrada + "Colección Invierno — pronto 🌊"' },
+    ],
+    copy: 'Termas, Brasil, Montevideo, pileta climatizada... hay mil razones para seguir usándolo. ❄️🌊\n\nY nosotras tenemos la prenda para cada una.\n\nColección Invierno — pronto.'
+  },
+  {
+    id: 7, fase: 'f1',
+    pilar: 'lifestyle', formato: 'carrusel',
+    hook: '"A estos lugares viajamos con la colección"',
+    desc: 'Moodboard aspiracional de destinos de invierno donde tiene sentido un traje de baño.',
+    idea: 'Un carrusel estilo guía de viaje / moodboard que conecta la colección con destinos reales donde las chicas viajan en invierno. Genera aspiración y da contexto de uso al producto antes de mostrarlo.',
+    guion: [
+      { time: 'Slide 1', text: '"A estos lugares viajamos con la colección invierno 🗺️" — Foto travel mood.' },
+      { time: 'Slide 2', text: 'Termas argentinas (Neuquén / Entre Ríos). Texto: "Las termas argentinas 🌡️ El plan obligado de julio."' },
+      { time: 'Slide 3', text: 'Nordeste de Brasil. Texto: "Brasil en julio: porque el norte nunca se enfría ☀️"' },
+      { time: 'Slide 4', text: 'Montevideo / Punta del Este. Texto: "Uruguay: el lado B de siempre 🌊"' },
+      { time: 'Slide 5', text: 'Pileta climatizada. Texto: "Porque el invierno también tiene pileta. Y nosotras lo sabemos."' },
+      { time: 'Slide 6', text: 'Encuesta en la última slide: "¿A dónde viajás vos este invierno?" + sticker de encuesta.' },
+    ],
+    copy: 'El invierno argentino tiene sus propios paraísos 🌊\n\n¿A cuál de estos viajás este año?\n\n(Tenemos algo pensado para cada uno 😉)'
+  },
+  {
+    id: 8, fase: 'f1',
+    pilar: 'lifestyle', formato: 'foto',
+    hook: '"El color que nos volvió locas este invierno"',
+    desc: 'Foto editorial con el color protagonista de la temporada. Sin mostrar prendas completas.',
+    idea: 'Una foto de alta calidad que capture la esencia del color estrella de la colección — puede ser tela, accesorios, elementos naturales que evoquen ese tono. Minimalista y poderosa. El objetivo es crear asociación visual con la paleta antes de mostrar el producto.',
+    guion: [
+      { time: 'Composición', text: 'Close-up de la tela/elemento con el color protagonista sobre fondo neutro (arena, blanco).' },
+      { time: 'Edición', text: 'Alta saturación del color principal, todo lo demás neutro. Luz natural difusa.' },
+      { time: 'Texto', text: 'Sin texto superpuesto. El copy en el pie de foto hace el trabajo.' },
+    ],
+    copy: 'Hay colores que simplemente... 🤍\n\nEste invierno, uno solo nos volvió locas.\n\n¿Lo adivinan?\n\n— Pronto.'
+  },
+  {
+    id: 9, fase: 'f1',
+    pilar: 'comunidad', formato: 'story',
+    hook: '"¿Cuál es tu destino de invierno favorito?"',
+    desc: 'Story interactiva con encuesta para generar engagement y entender a la audiencia.',
+    idea: 'Una secuencia de stories que primero genera empatía (Lucía hablando de planear viajes), luego activa a la audiencia con una encuesta, y cierra con un teaser. El objetivo es doble: engagement real + entender dónde viajan para adaptar el contenido posterior.',
+    guion: [
+      { time: 'Story 1', text: 'Lucía o texto sobre fondo: "A nosotras nos llega julio y ya estamos planeando el viaje 😅 ¿Y ustedes?"' },
+      { time: 'Story 2', text: 'Encuesta: "¿A dónde van este invierno?" | Opción A: Termas 🌡️ | Opción B: Brasil ☀️' },
+      { time: 'Story 3', text: 'Respuesta de Lucía al día siguiente: "Tenemos algo pensado para ese viaje... 👀"' },
+    ],
+    copy: '(Solo stories — no requiere copy de feed)'
+  },
+  {
+    id: 10, fase: 'f1',
+    pilar: 'comunidad', formato: 'carrusel',
+    hook: '"Así fue tu verano con Salitrada"',
+    desc: 'Repost de las mejores fotos de clientas del verano anterior. Nostalgia + comunidad.',
+    idea: 'Un carrusel compilando las mejores fotos de clientas con sus Salitrada en el verano (previa autorización). El objetivo es generar nostalgia del verano, mostrar la comunidad real detrás de la marca, y crear el puente emocional hacia la colección de invierno.',
+    guion: [
+      { time: 'Slide 1', text: '"Este verano fueron todas 🌊" — Foto de playa vibrante como portada.' },
+      { time: 'Slides 2–7', text: 'Fotos de clientas reales (mínimo 5, idealmente 8–10). Pedir permiso antes de postear. Tag de la clienta en cada slide si acepta.' },
+      { time: 'Slide final', text: '"El invierno no las para. Pronto, lo nuevo. 🤍 Seguinos para ser la primera en enterarse."' },
+    ],
+    copy: 'Este verano nos mandaron miles de fotos y cada una nos hizo el día ☀️\n\nGracias por elegir Salitrada una y otra vez.\n\nEl invierno viene con novedades. ¿Ya activaron las notificaciones? 🔔'
+  },
+  {
+    id: 11, fase: 'f1',
+    pilar: 'marca', formato: 'reel',
+    hook: '"Lo que cambió en Salitrada este año"',
+    desc: 'Lucía reflexiona sobre el crecimiento de la marca. Tono íntimo y personal.',
+    idea: 'Un Reel tipo "reflexión de fundadora" donde Lucía habla a cámara sobre lo que aprendieron este año y cómo eso se refleja en la nueva colección. Muy auténtico, sin producción excesiva. Genera confianza y posiciona el lanzamiento como algo especial y evolucionado.',
+    guion: [
+      { time: '0–5s', text: 'Lucía: "Hace un año Salitrada era muy diferente."' },
+      { time: '5–12s', text: '"Aprendimos muchísimo — sobre lo que ustedes quieren, sobre procesos, sobre calidad."' },
+      { time: '12–18s', text: '"Y esta colección de invierno es el reflejo de todo eso."' },
+      { time: '18–22s', text: '"Pronto les cuento todo. Pero spoiler: es lo mejor que hicimos." Sonríe.' },
+    ],
+    copy: 'Cada colección nos enseña algo nuevo. Y esta invierno es especial. 🤍\n\nPronto les contamos todo.'
+  },
+  {
+    id: 12, fase: 'f1',
+    pilar: 'bts', formato: 'story',
+    hook: '"Algo está pasando en el taller..."',
+    desc: 'Story críptica y misteriosa para generar intriga pura.',
+    idea: 'Una story minimalista y misteriosa: solo un video corto del taller con música de suspenso/ambiente y texto críptico. Sin dar información. El objetivo es la intriga pura — que la audiencia pregunte "¿qué está pasando?" en los DMs.',
+    guion: [
+      { time: 'Story 1', text: 'Video 8s del taller con música de ambiente/suspenso. Texto pequeño: "algo está pasando en el taller..."' },
+      { time: 'Story 2', text: 'Solo texto sobre fondo negro: "¿Adivinan?" con sticker de pregunta.' },
+      { time: 'Story 3', text: 'Solo el emoji 👀 sobre fondo del color de la temporada.' },
+    ],
+    copy: '(Solo stories — no requiere copy de feed)'
+  },
+
+  // ── FASE 2 ──────────────────────────────────────────────────────
+  {
+    id: 13, fase: 'f2',
+    pilar: 'producto', formato: 'reel',
+    hook: '"Primer vistazo 👀"',
+    desc: 'Primer reveal dramático de la prenda protagonista. Edición con suspenso.',
+    idea: 'El Reel más esperado de la Fase 2 — el primer reveal real de una prenda. Edición cinematográfica con suspenso: oscuridad, sonido de tela, flash breve de la pieza completa. La idea es dar una primera mirada que deje a la audiencia queriendo más.',
+    guion: [
+      { time: '0–2s', text: 'Pantalla negra. Se escucha el sonido de tela siendo desenvuelta.' },
+      { time: '2–5s', text: 'Manos sosteniendo la prenda por los bordes, sin mostrarla completa. Luz dramática.' },
+      { time: '5–7s', text: 'Flash de 1 segundo mostrando la prenda completa — luego a negro.' },
+      { time: '7–10s', text: 'Texto: "Ya casi." / Fecha de lanzamiento en grande.' },
+      { time: '10–12s', text: 'Logo Salitrada sobre negro.' },
+    ],
+    copy: 'Ya casi no podemos más de las ganas de mostrársela. 👀\n\nPrimer vistazo.\n\n[fecha de lanzamiento] 🌊'
+  },
+  {
+    id: 14, fase: 'f2',
+    pilar: 'producto', formato: 'foto',
+    hook: '"El color estrella de esta temporada"',
+    desc: 'Foto editorial cerrada, close-up extremo del color/textura sin mostrar prenda completa.',
+    idea: 'Una foto editorial de close-up extremo que revela el color y textura de la pieza principal de la colección. Sin mostrar la prenda completa todavía. Minimalista, de mucha calidad. El copy hace toda la magia del misterio.',
+    guion: [
+      { time: 'Encuadre', text: 'Macro / close-up muy cerrado de la tela de la prenda principal sobre superficie neutra.' },
+      { time: 'Luz', text: 'Luz lateral suave que resalte la textura. Nada de flash.' },
+      { time: 'Color', text: 'El color de la prenda debe ser el protagonista absoluto de la foto.' },
+    ],
+    copy: 'Este color.\n\nNada más que decir. 🎨\n\n[fecha de lanzamiento]'
+  },
+  {
+    id: 15, fase: 'f2',
+    pilar: 'producto', formato: 'story',
+    hook: '"¿Cuál es tu favorita?"',
+    desc: 'Encuesta mostrando dos opciones de la colección. Activar a la audiencia.',
+    idea: 'Una story interactiva que muestra dos piezas de la colección (o dos colores/opciones) y hace votar a la audiencia. Sirve para generar engagement masivo y además da información sobre las preferencias reales de las clientas para saber qué va a volar primero.',
+    guion: [
+      { time: 'Story 1', text: 'Texto: "Momento de elegir 😏 Dos de las nuevas piezas:" + foto de opción A y opción B.' },
+      { time: 'Story 2', text: 'Poll: "[Nombre/emoji Opción A]" vs "[Nombre/emoji Opción B]"' },
+      { time: 'Story 3 (día sig.)', text: 'Lucía responde: "Bueno... tal vez las tenemos a las dos 😉 [fecha de lanzamiento]"' },
+    ],
+    copy: '(Solo stories — no requiere copy de feed)'
+  },
+  {
+    id: 16, fase: 'f2',
+    pilar: 'producto', formato: 'carrusel',
+    hook: '"Todo lo que trae la colección invierno"',
+    desc: 'Teaser visual de toda la colección. Fotos con overlay o desenfocadas.',
+    idea: 'Un carrusel que muestra todas las piezas de la colección, pero con un overlay de color o desenfoque suave que no permite ver los detalles claramente. Cada slide tiene el nombre de la pieza pero no el precio ni los detalles completos. Crear anticipación masiva.',
+    guion: [
+      { time: 'Slide 1', text: '"La colección invierno — un adelanto 🌊" + fecha de lanzamiento.' },
+      { time: 'Slides 2–8', text: 'Una pieza por slide. Foto con overlay semitransparente del color de la temporada. Solo el nombre de la pieza visible.' },
+      { time: 'Slide final', text: '"[Fecha] — Disponible en la tienda. Guardar este post para no olvidarse 🔖"' },
+    ],
+    copy: 'Las esperaron. Ya casi las tienen. 🌊\n\nGuarden este post para que no se les escape cuando salga.\n\n[fecha] — Colección Invierno Salitrada.'
+  },
+  {
+    id: 17, fase: 'f2',
+    pilar: 'producto', formato: 'story',
+    hook: '"Faltan X días ⏳" (countdown diario)',
+    desc: 'Story diaria con countdown sticker durante los 7 días previos al lanzamiento.',
+    idea: 'Una story diaria minimalista durante la semana de countdown. Usa el sticker de countdown nativo de Instagram apuntando a la fecha de lanzamiento. Fondo con el color de temporada, tipografía simple. El objetivo es que la audiencia active la alarma del countdown.',
+    guion: [
+      { time: 'Diseño', text: 'Fondo plano con el color principal de la temporada.' },
+      { time: 'Centro', text: 'Sticker de Countdown de Instagram configurado para el día/hora del lanzamiento.' },
+      { time: 'Texto', text: '"Faltan [X] días para la colección invierno ❄️" en tipografía limpia.' },
+      { time: 'Extra', text: 'Cada día puede variar levemente: día 7 texto largo, día 1 solo el número "1" gigante.' },
+    ],
+    copy: '(Solo stories — no requiere copy de feed)'
+  },
+  {
+    id: 18, fase: 'f2',
+    pilar: 'bts', formato: 'reel',
+    hook: '"La sesión de fotos — detrás de cámara"',
+    desc: 'Making of de la sesión editorial. El equipo trabajando, caos y magia.',
+    idea: 'Un Reel del backstage de la sesión de fotos de la colección. Se puede (y debe) mostrar ropa, modelos, el equipo — sin dar los detalles finales del producto. El objetivo es mostrar el proceso creativo y generar expectativa sobre las fotos editoriales que se vienen.',
+    guion: [
+      { time: '0–5s', text: 'Llegada al set: el equipo armando la iluminación, Lucía revisando prendas.' },
+      { time: '5–12s', text: 'Tomas de la sesión: la fotógrafa trabajando, modelo en acción, risas del equipo. Sin mostrar detalles de prendas claramente.' },
+      { time: '12–17s', text: 'Lucía revisando las fotos en la pantalla de la cámara, cara de emoción.' },
+      { time: '17–20s', text: 'Texto: "En [X] días lo ven todo. 🌊"' },
+    ],
+    copy: 'El backstage de la sesión editorial 🎬\n\nNo es tan glamoroso como parece... o sí? 😂\n\nEn [X] días ven el resultado. Prometemos que vale la pena.'
+  },
+  {
+    id: 19, fase: 'f2',
+    pilar: 'bts', formato: 'story',
+    hook: '"Lucía eligiendo los looks finales"',
+    desc: 'Momento íntimo de Lucía revisando opciones. Sin producción, muy auténtico.',
+    idea: 'Una story sin producción: Lucía en el estudio o en casa con prendas extendidas, eligiendo qué va y qué no. Tono casual y real. Puede terminar con una encuesta pidiendo opinión a la audiencia.',
+    guion: [
+      { time: 'Story 1', text: 'Lucía con prendas sobre cama/mesa. Texto: "Eligiendo los looks finales para la sesión 😩 Hay demasiadas buenas."' },
+      { time: 'Story 2', text: '"¿Ustedes cuál sacarían?" | Opción A vs Opción B (fotos de las opciones).' },
+      { time: 'Story 3', text: 'Lucía responde: "Imposible sacar una sola. Van todas 😅 Spoiler: la sesión quedó increíble."' },
+    ],
+    copy: '(Solo stories — no requiere copy de feed)'
+  },
+  {
+    id: 20, fase: 'f2',
+    pilar: 'comunidad', formato: 'story',
+    hook: '"¿Qué talle siempre querés que reposemos?"',
+    desc: 'Encuesta de talle para mostrar que los escuchan y gestionar expectativas.',
+    idea: 'Una story que le pregunta a la audiencia qué talle necesitan que siempre esté disponible. Sirve para dos cosas: mostrar que Salitrada escucha a su comunidad, y recolectar data real para planificar el stock del lanzamiento.',
+    guion: [
+      { time: 'Story 1', text: 'Texto: "Una pregunta importante antes del lanzamiento 👇"' },
+      { time: 'Story 2', text: 'Caja de respuestas: "¿Qué talle siempre querés que tengamos en stock?" O poll: S/M vs L/XL' },
+      { time: 'Story 3', text: 'Lucía: "Lo estamos mirando. 🫶 La colección invierno viene con muchos talles disponibles."' },
+    ],
+    copy: '(Solo stories — no requiere copy de feed)'
+  },
+  {
+    id: 21, fase: 'f2',
+    pilar: 'comunidad', formato: 'story',
+    hook: '"Las primeras en enterarse son ustedes"',
+    desc: 'Revelación de la fecha exacta de lanzamiento a las seguidoras. Sensación de exclusividad.',
+    idea: 'Una story que genera un momento de comunidad exclusiva: Lucía comparte la fecha y hora exacta del lanzamiento "solo a las que las siguen". El objetivo es hacer sentir a la audiencia parte de algo especial y que activen las notificaciones.',
+    guion: [
+      { time: 'Story 1', text: 'Lucía o texto: "A las que llevan tiempo acá, un secreto 🤫"' },
+      { time: 'Story 2', text: '"La colección sale el [fecha exacta] a las [hora] por la tienda online."' },
+      { time: 'Story 3', text: '"Activen las notificaciones para no perderse nada 🔔 Son las primeras en saberlo."' },
+    ],
+    copy: '(Solo stories — no requiere copy de feed)'
+  },
+
+  // ── FASE 3 ──────────────────────────────────────────────────────
+  {
+    id: 22, fase: 'f3',
+    pilar: 'producto', formato: 'reel',
+    hook: '"YA ESTÁ ✨ — La colección invierno ya está disponible"',
+    desc: 'El Reel de lanzamiento. El más producido. Tiene que ser el mejor del mes.',
+    idea: 'El Reel de lanzamiento es la pieza más importante de los 30 días. Debe concentrar toda la energía generada en las semanas previas. Montaje rápido de todas las prendas, música que explota en el momento del reveal, y Lucía cerrando con el llamado a la acción. Sin escatimar en producción.',
+    guion: [
+      { time: '0–1s', text: 'Negro absoluto. Silencio.' },
+      { time: '1–2s', text: 'Música explota. Flash de color.' },
+      { time: '2–8s', text: 'Montaje rápido de todas las prendas de la colección — las mejores tomas de la editorial.' },
+      { time: '8–12s', text: 'Lucía a cámara: "Ya está. La colección invierno de Salitrada ya está disponible."' },
+      { time: '12–15s', text: '"Link en bio. Van a volar." Sonríe.' },
+      { time: '15s', text: 'Texto grande: "COLECCIÓN INVIERNO — DISPONIBLE AHORA 🌊" + Logo.' },
+    ],
+    copy: 'LLEGÓ. 🌊❄️\n\nLa colección invierno de Salitrada ya está disponible.\n\nEntrá rápido — hay talles limitados.\n\n🔗 Link en bio. Te esperamos.'
+  },
+  {
+    id: 23, fase: 'f3',
+    pilar: 'producto', formato: 'carrusel',
+    hook: '"Cada pieza de la colección"',
+    desc: 'La editorial completa. La mejor foto de cada prenda con nombre y precio.',
+    idea: 'El carrusel definitivo del lanzamiento: una foto editorial de alta calidad de cada pieza, con su nombre y precio. Este post debe ser guardado por las potenciales clientas para consultar el catálogo completo. Claridad total — es el momento de mostrar todo.',
+    guion: [
+      { time: 'Slide 1', text: '"Colección Invierno 2025 🌊" — foto editorial más poderosa como portada.' },
+      { time: 'Slides 2–N', text: 'Una pieza por slide. Foto en alta calidad. Nombre de la prenda + precio + colores disponibles.' },
+      { time: 'Slide final', text: '"Todo disponible ahora. Link en bio para ver toda la colección 🔗"' },
+    ],
+    copy: 'Pieza por pieza, la colección completa. 🤍\n\n¿Cuál es la tuya?\n\nLink en bio para verlas todas y hacer tu pedido.'
+  },
+  {
+    id: 24, fase: 'f3',
+    pilar: 'producto', formato: 'reel',
+    hook: '"Así se ve en el cuerpo real"',
+    desc: 'Prendas en distintos cuerpos y talles. Auténtico, inclusivo, directo.',
+    idea: 'Un Reel que muestra las prendas de la colección en chicas de distintos cuerpos y talles. Tono alegre y natural, sin producción excesiva. El objetivo es romper la brecha entre "la foto editorial" y "cómo me va a quedar a mí". Es una pieza de conversión directa.',
+    guion: [
+      { time: '0–3s', text: 'Texto: "¿Cómo queda en la realidad? Así 👇"' },
+      { time: '3–15s', text: 'Montaje de 4–6 chicas de distintos cuerpos usando distintas prendas. Tono natural, sin producción excesiva. Texto superpuesto: "Talle S", "Talle M", "Talle L", etc.' },
+      { time: '15–18s', text: 'Texto: "Disponible en S, M, L y XL. Link en bio 🔗"' },
+    ],
+    copy: 'Porque el traje de baño es para todos los cuerpos. 🌊\n\nAsí se ven las prendas en la vida real — talles S, M, L y XL disponibles.\n\nLink en bio para conseguir la tuya.'
+  },
+  {
+    id: 25, fase: 'f3',
+    pilar: 'producto', formato: 'carrusel',
+    hook: '"Los detalles que nos enamoraron"',
+    desc: 'Close-ups de terminaciones, costuras, materiales. Justificar el precio con calidad.',
+    idea: 'Un carrusel educativo sobre la calidad de la colección. Cada slide muestra un detalle específico de las prendas (costura, elástico, argollas, tela) con una descripción del por qué ese detalle importa. El objetivo es justificar el precio con evidencia tangible de calidad.',
+    guion: [
+      { time: 'Slide 1', text: '"Los detalles que hacen la diferencia ✨" — foto de detalle de prenda.' },
+      { time: 'Slide 2', text: 'Costura interior. Texto: "Las costuras que no se ven... pero se sienten después de 10 lavados."' },
+      { time: 'Slide 3', text: 'Detalle de argolla / broche. Texto: "Los herrajes que elegimos — no se oxidan, no se rompen."' },
+      { time: 'Slide 4', text: 'Elástico de cintura/tirantes. Texto: "El elástico que aguanta temporadas. No el que se va la primera vez."' },
+      { time: 'Slide 5', text: 'Textura de tela. Texto: "La tela que resiste el sol, el cloro y el salitre. Y sigue brillando."' },
+      { time: 'Slide final', text: '"Calidad Salitrada. Link en bio 🔗"' },
+    ],
+    copy: 'La calidad no es un slogan — es una decisión de diseño. 🤍\n\nCada detalle de la colección invierno tiene una razón de ser.\n\nLink en bio para la tuya.'
+  },
+  {
+    id: 26, fase: 'f3',
+    pilar: 'producto', formato: 'reel',
+    hook: '"¿Cómo usarla en invierno?"',
+    desc: 'Outfits y combinaciones para usar las prendas en contextos invernales.',
+    idea: 'Un Reel de lookbook / styling que muestra cómo combinar las prendas de la colección en contextos de invierno reales. Rompe la objeción de "para qué la compro si no voy a la playa". Cada look tiene un título breve y dónde usarlo.',
+    guion: [
+      { time: '0–2s', text: 'Texto: "3 formas de usarla este invierno 👇"' },
+      { time: '2–7s', text: 'Look 1: Traje de baño + campera oversized + botas. Texto: "Termas 🌡️"' },
+      { time: '7–12s', text: 'Look 2: Bikini + jeans + tapado largo. Texto: "Viaje a la costa ✈️"' },
+      { time: '12–17s', text: 'Look 3: Traje completo en pileta climatizada. Texto: "Pileta cubierta 🏊"' },
+      { time: '17–20s', text: '"Nunca es mal momento. Link en bio 🔗"' },
+    ],
+    copy: 'Spoiler: nunca es mal momento para un traje de baño Salitrada 😏\n\nTe mostramos 3 formas de usarlo este invierno.\n\nLink en bio para conseguir el tuyo.'
+  },
+  {
+    id: 27, fase: 'f3',
+    pilar: 'comunidad', formato: 'story',
+    hook: '"Las primeras en recibirla"',
+    desc: 'Repostear stories de clientas que recibieron su pedido. Social proof en tiempo real.',
+    idea: 'Una serie de stories en tiempo real donde Lucía repostea a las primeras clientas que recibieron su pedido y lo muestran en sus propias stories. Agrega siempre una reacción personal o texto de Lucía. Es el social proof más poderoso: gente real, reacción real.',
+    guion: [
+      { time: 'Acción', text: 'Monitorear stories y comentarios de las primeras clientas que reciben el pedido.' },
+      { time: 'Reposteo', text: 'Pedir permiso y repostear sus stories con el texto de Lucía: "¡Llegó! 🥹❤️"' },
+      { time: 'Continuidad', text: 'Hacer esto todos los días de la Fase 3 mientras lleguen pedidos.' },
+    ],
+    copy: '(Solo stories — no requiere copy de feed)'
+  },
+  {
+    id: 28, fase: 'f3',
+    pilar: 'comunidad', formato: 'carrusel',
+    hook: '"Lo que nos escribieron"',
+    desc: 'Capturas de mensajes y comentarios de clientas. El poder del boca a boca.',
+    idea: 'Un carrusel con capturas de pantalla (con permiso) de los mensajes, DMs y comentarios más emotivos de las clientas post-compra. Es la prueba social más poderosa y humaniza totalmente la marca. Convertir en el pilar de conversión de la fase final.',
+    guion: [
+      { time: 'Slide 1', text: '"Lo que nos escribieron 🫶" — fondo de color de temporada.' },
+      { time: 'Slides 2–8', text: 'Screenshots de mensajes/comentarios positivos (con permiso). Texto claro, buen contraste. Anonimizar si la clienta lo prefiere.' },
+      { time: 'Slide final', text: '"Gracias por confiar en Salitrada. Link en bio para la tuya 🔗"' },
+    ],
+    copy: 'Cuando nos llegan estos mensajes no podemos más. 🥹\n\nGracias por elegir Salitrada una y otra vez.\n\nLink en bio si todavía no tenés la tuya.'
+  },
+  {
+    id: 29, fase: 'f3',
+    pilar: 'comunidad', formato: 'story',
+    hook: '"Así llegó a casa"',
+    desc: 'UGC de clientas mostrando el unboxing. El momento de la verdad.',
+    idea: 'Compilación de stories de clientas abriendo su paquete Salitrada. El momento del unboxing es muy emocional y genera deseo en quien todavía no compró. Lucía repostea con reacciones genuinas y puede agregar "¿Todavía no la tenés? Link en bio".',
+    guion: [
+      { time: 'Acción', text: 'Monitorear etiquetas y menciones de clientas recibiendo sus pedidos.' },
+      { time: 'Curaduría', text: 'Seleccionar los unboxings más emocionantes/lindos para repostear.' },
+      { time: 'Texto Lucía', text: 'Siempre agregar texto de Lucía encima: "Esto nos rompe el corazón 🥹❤️" o "¡¡Llegó!! 🎉"' },
+    ],
+    copy: '(Solo stories — no requiere copy de feed)'
+  },
+  {
+    id: 30, fase: 'f3',
+    pilar: 'producto', formato: 'story',
+    hook: '"Últimos talles disponibles en [pieza X] 🚨"',
+    desc: 'Urgencia real de stock bajo. La pieza de conversión más directa de todas.',
+    idea: 'Una story de urgencia genuina cuando alguna pieza tiene pocos talles disponibles. La urgencia real (no fabricada) es la más efectiva. Lucía puede grabar un video corto o usar texto impactante. El objetivo es la conversión inmediata.',
+    guion: [
+      { time: 'Story 1', text: 'Video corto de Lucía: "ALERTA 🚨 Quedan los últimos talles del [nombre de la prenda]."' },
+      { time: 'Story 2', text: 'Lista de talles disponibles: "Disponibles: [S] [M] — el L y el XL ya volaron."' },
+      { time: 'Story 3', text: '"Link en bio antes de que se agoten. Van rápido." Sticker con link directo.' },
+    ],
+    copy: '(Solo stories — no requiere copy de feed)'
+  },
+  {
+    id: 31, fase: 'f3',
+    pilar: 'marca', formato: 'reel',
+    hook: '"Gracias por hacer esto posible"',
+    desc: 'Lucía agradeciendo post-lanzamiento exitoso. Cierre emocional del ciclo.',
+    idea: 'Un Reel de cierre: Lucía habla a cámara desde un lugar auténtico, agradeciendo el apoyo del lanzamiento. Sin producción, tal vez con el equipo en el fondo. Es el cierre emocional de los 30 días y al mismo tiempo abre el próximo capítulo.',
+    guion: [
+      { time: '0–5s', text: 'Lucía: "El lanzamiento superó todas nuestras expectativas."' },
+      { time: '5–12s', text: '"Cada pedido, cada mensaje, cada story que nos etiquetaron... no tienen idea lo que significa para este equipo."' },
+      { time: '12–18s', text: '"Salitrada existe porque ustedes la eligen. Eso nunca lo damos por sentado."' },
+      { time: '18–22s', text: '"Gracias, de verdad." Sonríe. Música suave.' },
+    ],
+    copy: 'Gracias. De verdad. 🤍\n\nCada pedido es una persona que confió en nosotras y eso nunca lo vamos a dar por sentado.\n\nEl equipo completo les manda un abrazo enorme. Lo que sigue va a ser aún mejor.'
+  },
+];
+
+// ── RENDER ──────────────────────────────────────────────────────────────────
+
+function getPhaseMeta(fase) {
+  const meta = {
+    f1: { label: 'Fase 1 — Anticipación', dates: '25 mar → 7 abr', class: 'f1' },
+    f2: { label: 'Fase 2 — Countdown', dates: '8 abr → 14 abr', class: 'f2' },
+    f3: { label: 'Fase 3 — Lanzamiento', dates: '15 abr → 24 abr', class: 'f3' },
+  };
+  return meta[fase];
+}
+
+function renderCards(filter) {
+  const container = document.getElementById('cards-container');
+  container.innerHTML = '';
+
+  const phases = ['f1', 'f2', 'f3'];
+  phases.forEach(fase => {
+    const items = content.filter(c => c.fase === fase && (filter === 'all' || filter === fase));
+    if (items.length === 0) return;
+
+    const meta = getPhaseMeta(fase);
+
+    const header = document.createElement('div');
+    header.className = 'phase-header';
+    header.innerHTML = `
+      <span class="phase-badge ${meta.class}">${meta.label}</span>
+      <span class="phase-dates">${meta.dates}</span>
+    `;
+    container.appendChild(header);
+
+    const grid = document.createElement('div');
+    grid.className = 'grid';
+
+    items.forEach(item => {
+      const card = document.createElement('div');
+      card.className = `card ${item.fase}`;
+      card.onclick = () => openModal(item);
+
+      const formatoLabel = FORMATOS[item.formato] || item.formato;
+      const pilarLabel = PILARES[item.pilar] || item.pilar;
+
+      card.innerHTML = `
+        <div class="card-top">
+          <span class="card-num">#${String(item.id).padStart(2,'0')}</span>
+          <div class="badges">
+            <span class="badge badge-pilar">${pilarLabel}</span>
+            <span class="badge badge-formato">${formatoLabel}</span>
+          </div>
+        </div>
+        <div class="card-hook">${item.hook}</div>
+        <div class="card-desc">${item.desc}</div>
+        <div class="card-arrow">→</div>
+      `;
+      grid.appendChild(card);
+    });
+
+    container.appendChild(grid);
+  });
+}
+
+function filterCards(filter, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCards(filter);
+}
+
+// ── MODAL ──────────────────────────────────────────────────────────────────
+
+function openModal(item) {
+  const meta = getPhaseMeta(item.fase);
+  const pilarLabel = PILARES[item.pilar] || item.pilar;
+  const formatoLabel = FORMATOS[item.formato] || item.formato;
+
+  document.getElementById('modal-top-bar').className = `modal-top-bar ${item.fase}`;
+  document.getElementById('modal-num').textContent = `#${String(item.id).padStart(2,'0')} — ${meta.label}`;
+  document.getElementById('modal-meta').innerHTML = `
+    <span class="badge badge-pilar">${pilarLabel}</span>
+    <span class="badge badge-formato">${formatoLabel}</span>
+  `;
+  document.getElementById('modal-title').textContent = item.hook;
+
+  // Idea
+  document.getElementById('modal-idea').innerHTML = `<p>${item.idea}</p>`;
+
+  // Guión
+  const guionEl = document.getElementById('modal-guion');
+  if (item.guion && item.guion.length > 0) {
+    guionEl.innerHTML = item.guion.map(g => `
+      <div class="guion-line">
+        <span class="guion-time">${g.time}</span>
+        ${g.text}
+      </div>
+    `).join('');
+  } else {
+    guionEl.innerHTML = '<p style="color:#6B7280">Sin guión detallado para este formato.</p>';
+  }
+
+  // Copy
+  const copyEl = document.getElementById('modal-copy');
+  if (item.copy && item.copy !== '(Solo stories — no requiere copy de feed)') {
+    copyEl.innerHTML = `
+      <div class="copy-box">
+        <span class="copy-chip">COPY PARA EL POST</span><br>
+        ${item.copy.replace(/\n/g, '<br>')}
+      </div>
+    `;
+  } else {
+    copyEl.innerHTML = `
+      <div class="copy-box" style="color:#6B7280;font-style:italic;">
+        ${item.copy}
+      </div>
+    `;
+  }
+
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeModalOnOverlay(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+// ── INIT ───────────────────────────────────────────────────────────────────
+renderCards('all');
+</script>
+</body>
+</html>
